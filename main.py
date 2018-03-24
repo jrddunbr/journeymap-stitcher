@@ -63,6 +63,6 @@ for x in range(smallX, bigX):
     for y in range(smallY, bigY):
         if "{},{}.png".format(x,y) in filelist:
             img = Image.open(INPUTPATH + "{},{}.png".format(x, y))
-            bigimg.paste(im=img, box=((x) * TILE_HEIGHT, (y) * TILE_WIDTH))
+            bigimg.paste(im=img, box=((x + abs(smallX)) * TILE_HEIGHT, (y + abs(smallY)) * TILE_WIDTH))
 
 bigimg.save("output.png")
