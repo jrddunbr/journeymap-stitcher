@@ -19,46 +19,33 @@ TILE_SIZE = getImageSize(INPUTPATH + filelist[0])
 #
 # -,+   +,+
 
-bottom = -1000
-top = 1000
-left = 1000
-right = -1000
+X = list(map(lambda x: x[0],  clist))
+Z = list(map(lambda x: x[1],  clist))
+
+left  = min(X)
+right = max(X)
+
+bottom = max(Z)
+top    = min(Z)
 
 print(clist)
 
-for entry in clist:
-    x = entry[0]
-    z = entry[1]
-    if (x > right):
-        right = x
-    if (x < left):
-        left = x
-    if (z < top):
-        top = z
-    if (z > bottom):
-        bottom = z
 
-# These may be wrong for things that don't pass through the origin.
-width = abs(left) + abs(right) + 1
-height = abs(top) + abs(bottom) + 1
+width = right - left + 1
+height = bottom - top + 1
 
 print("({},{}) to ({},{})".format(left, top, right, bottom))
+print("{} by {} image".format(TILE_SIZE*width, TILE_SIZE*height))
 
 bigimg = Image.new('RGB', (TILE_SIZE * width, TILE_SIZE * height))
 
 print("starting stitch")
 
-# again, comment about the origin
-for z in range(top, bottom+1):
-    for x in range(left, right+1):
-        fn = "{},{}.png".format(x, z)
-        if fn in filelist:
-            print("#", end="")
-            img = Image.open(INPUTPATH + fn)
-            bigimg.paste(im=img, box=((x + abs(left)) * TILE_SIZE, (z + abs(top)) * TILE_SIZE))
-        else:
-            print(" ", end="")
-    print()
+for x,z in clist:
+    fn = "{},{}.png".format(x, z)
+    img = Image.open(INPUTPATH + fn)
+    print("adding ({},{}) image".format(x, z))
+    bigimg.paste(im=img, box=((x-left) * TILE_SIZE, (z-top) * TILE_SIZE))
 
 bigimg.save("output.png")
 
